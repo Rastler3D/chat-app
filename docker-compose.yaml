@@ -1,0 +1,78 @@
+version: "3.9"
+
+services:
+  frontend:
+    build: frontend
+    depends_on:
+      backend:
+        condition: service_started
+    networks:
+      frontend-network:
+    restart: always
+    environment:
+      NODE_ENV: production
+      BACKEND_URL: http://backend:8080
+    ports:
+      - "3000:3000"
+
+  backend:
+    build: backend
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    networks:
+      frontend-network:
+      backend-network:
+    restart: always
+    environment:
+      DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD}@postgres:5432/${COMPOSE_PROJECT_NAME}
+      REDIS_URL: redis://default:${REDIS_PASSWORD}@redis:6379
+    ports:
+      - "8080:8080"
+
+  redis:
+    image: redis:latest
+    networks:
+      backend-network:
+    restart: always
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    volumes:
+      - db-data:/data
+    ports:
+      - 6379
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 1s
+      timeout: 3s
+      retries: 30
+
+  postgres:
+    image: postgres:latest
+    networks:
+      backend-network:
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: ${COMPOSE_PROJECT_NAME}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - "5435:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  frontend-network:
+  backend-network:
+
+volumes:
+  db-data:
+    external: true
+    name: ${DATABASE_VOLUME}

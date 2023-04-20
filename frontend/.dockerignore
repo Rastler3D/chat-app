@@ -1,0 +1,8 @@
+node_modules
+.svelte-kit
+build
+.gitignore
+.git*
+.eslint*
+.prettier*
+README.md
