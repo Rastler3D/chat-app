@@ -19,6 +19,7 @@ RUN rm ./target/release/deps/chat_app* \
 FROM debian:buster-slim
 RUN apt-get update \
     && apt-get -y install libpq-dev \
+    && apt-get -y install curl \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /usr/src/chat_app/target/release/chat_app /bin/

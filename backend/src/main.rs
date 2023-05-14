@@ -28,6 +28,11 @@ use crate::db::sequences::user_id;
 
 pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
 
+#[get("/healthcheck")]
+async fn healthcheck() -> impl Responder {
+    HttpResponse::Ok().finish()
+}
+
 #[post("/chat/send")]
 async fn send_message(session: Session, message: String, broadcaster: Data<Addr<ChatBroadcaster>>) -> impl Responder{
     if let Some(user_id) = session.get::<usize>("user_id").unwrap(){
@@ -137,6 +142,7 @@ async fn main() -> std::io::Result<()> {
                 .supports_credentials()
                 .expose_any_header()
             )
+            .service(healthcheck)
             .service(logout)
             .service(sign_up)
             .service(chat_history)

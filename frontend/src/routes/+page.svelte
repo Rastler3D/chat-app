@@ -8,7 +8,6 @@
     import Connection from "../components/Connection.svelte";
     import Disconnection from "../components/Disconnection.svelte";
     import UserInfo from "../components/UserInfo.svelte";
-    import {BACKEND_URL} from "../scripts/backend_url";
 
     let user_id: number | undefined = undefined;
     let user_name: string | undefined  = undefined;
@@ -18,7 +17,7 @@
     let scroll: HTMLElement;
 
     async function logout(){
-        await fetch("/api/chat/send", {
+        await fetch("/api/chat/logout", {
             credentials: 'include',
             method: 'GET',
         });

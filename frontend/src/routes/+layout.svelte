@@ -3,7 +3,6 @@
         <div class="tabs-tab main-column" id="column-center">
             <div class="chats-container tabs-container" data-animation="navigation">
                 <div class="chat tabs-tab active" data-type="chat">
-                    <div class="chat-background chat-background-color"></div>
                     <div class="chat-background chat-background-pattern" ></div>
                     <slot></slot>
                 </div>
